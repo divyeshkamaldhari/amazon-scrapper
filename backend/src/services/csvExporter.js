@@ -10,13 +10,15 @@ const resultStorage = require('./resultStorage');
 const CSV_HEADERS = [
   { id: 'inputUpc', title: 'Input UPC' },
   { id: 'inputBrand', title: 'Input Brand' },
-  { id: 'asin', title: 'ASIN' },
-  { id: 'amazonBrand', title: 'Amazon Brand' },
-  { id: 'brandMatch', title: 'Brand Match' },
-  { id: 'upcMatch', title: 'UPC Match' },
-  { id: 'rating', title: 'Rating' },
-  { id: 'reviews', title: 'Reviews' },
-  { id: 'bsr', title: 'BSR' },
+  { id: 'asin1', title: 'ASIN1' },
+  { id: 'brand1', title: 'Brand1' },
+  { id: 'customerReviews', title: 'Customer reviews' },
+  { id: 'globalRatings', title: 'Global ratings' },
+  { id: 'upc1', title: 'UPC1' },
+  { id: 'bsr1', title: 'BSR1' },
+  { id: 'competitors1', title: 'Competitors1' },
+  { id: 'brandMatch1', title: 'Brand Match1' },
+  { id: 'upcMatch1', title: 'UPC Match1' },
   { id: 'status', title: 'Status' }
 ];
 
@@ -57,13 +59,15 @@ async function generateCsv(jobId) {
     const formattedData = results.map(row => ({
       inputUpc: row.inputUpc || '',
       inputBrand: row.inputBrand || '',
-      asin: row.asin || '',
-      amazonBrand: row.amazonBrand || '',
-      brandMatch: row.brandMatch ? 'Yes' : 'No',
-      upcMatch: row.upcMatch ? 'Yes' : 'No',
-      rating: row.rating !== null && row.rating !== undefined ? row.rating : '',
-      reviews: row.reviews !== null && row.reviews !== undefined ? row.reviews : '',
-      bsr: row.bsr !== null && row.bsr !== undefined ? row.bsr : '',
+      asin1: row.asin || '',
+      brand1: row.amazonBrand || '',
+      customerReviews: row.reviews !== null && row.reviews !== undefined ? row.reviews : '',
+      globalRatings: row.rating !== null && row.rating !== undefined ? row.rating : '',
+      upc1: row.scrapedUpc || row.inputUpc || '',
+      bsr1: row.bsr !== null && row.bsr !== undefined ? row.bsr : '',
+      competitors1: row.competitors || '',
+      brandMatch1: row.brandMatch ? 'Yes' : 'No',
+      upcMatch1: row.upcMatch ? 'Yes' : 'No',
       status: row.status || ''
     }));
 

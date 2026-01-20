@@ -167,6 +167,9 @@ function getAllResultsForExport(jobId) {
   const flatResults = [];
 
   results.forEach(result => {
+    // Count competitors (total products found for this UPC)
+    const competitorsCount = result.results ? result.results.length : 0;
+
     if (!result.results || result.results.length === 0) {
       // No products found - add single row with empty product data
       flatResults.push({
@@ -179,6 +182,8 @@ function getAllResultsForExport(jobId) {
         rating: '',
         reviews: '',
         bsr: '',
+        scrapedUpc: '',
+        competitors: competitorsCount,
         status: result.status
       });
     } else {
@@ -194,6 +199,8 @@ function getAllResultsForExport(jobId) {
           rating: product.rating || '',
           reviews: product.reviews || '',
           bsr: product.bsr || '',
+          scrapedUpc: product.upc || '',
+          competitors: competitorsCount,
           status: result.status
         });
       });
