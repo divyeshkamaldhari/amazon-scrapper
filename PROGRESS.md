@@ -106,6 +106,15 @@ npm run dev
 # Runs on http://localhost:5173
 ```
 
+### Docker (Full Stack)
+```bash
+# From project root
+docker-compose up --build
+
+# Backend: http://localhost:5000
+# Frontend: http://localhost:80
+```
+
 ---
 
 ## API Endpoints
@@ -119,24 +128,44 @@ npm run dev
 | `/api/jobs/:id/download` | GET | Download CSV |
 | `/api/jobs/:id/pause` | POST | Pause job |
 | `/api/jobs/:id/resume` | POST | Resume/Start job |
+| `/api/jobs/:id/logs` | GET | Get job logs |
+| `/api/jobs/:id` | DELETE | Delete job and files |
+| `/api/admin/stats` | GET | Get storage statistics |
+| `/api/admin/cleanup` | POST | Clean up old files |
+
+#### Phase 11: Error Handling & Recovery ✅
+| File | Description |
+|------|-------------|
+| `backend/src/services/errorHandler.js` | Centralized error detection (CAPTCHA, rate limit, network), retry strategies with exponential backoff |
+
+#### Phase 12: Logging System ✅
+| File | Description |
+|------|-------------|
+| `backend/src/utils/logger.js` | Structured logging with file output and job-specific logs |
+| `backend/src/routes/jobRoutes.js` | Added `/api/jobs/:id/logs` endpoint |
+
+#### Phase 16: Integration & Testing ✅
+| File | Description |
+|------|-------------|
+| `backend/tests/integration.test.js` | API integration tests for health, jobs, upload endpoints |
+
+#### Phase 17: Performance & Optimization ✅
+| File | Description |
+|------|-------------|
+| `backend/src/services/cleanup.js` | Storage cleanup utilities for old files |
+| `backend/src/routes/adminRoutes.js` | Admin endpoints for stats and cleanup |
+
+#### Phase 18: Documentation & Deployment ✅
+| File | Description |
+|------|-------------|
+| `backend/Dockerfile` | Node.js Alpine with health check |
+| `frontend/Dockerfile` | Multi-stage build with nginx |
+| `frontend/nginx.conf` | Nginx config with API proxy to backend |
+| `docker-compose.yml` | Full stack deployment configuration |
 
 ---
 
-## Remaining Phases
-
-### Phase 11: Error Handling & Recovery
-- [ ] Create `backend/src/services/errorHandler.js`
-- [ ] Implement retry with exponential backoff
-- [ ] Implement automatic pause on CAPTCHA
-
-### Phase 12: Logging System
-- [ ] Create `backend/src/utils/logger.js`
-- [ ] Add structured logging
-
-### Phase 16-18: Testing, Optimization & Documentation
-- [ ] Integration testing
-- [ ] Performance optimization
-- [ ] Docker setup (optional)
+## ✅ ALL 18 PHASES COMPLETED
 
 ---
 
@@ -163,14 +192,17 @@ scrapper-amazon/
 │   │   ├── controllers/
 │   │   │   └── jobController.js
 │   │   ├── routes/
-│   │   │   └── jobRoutes.js
+│   │   │   ├── jobRoutes.js
+│   │   │   └── adminRoutes.js
 │   │   ├── services/
 │   │   │   ├── scraper/
 │   │   │   │   ├── httpClient.js
 │   │   │   │   ├── searchScraper.js
 │   │   │   │   ├── productScraper.js
 │   │   │   │   └── index.js
+│   │   │   ├── cleanup.js
 │   │   │   ├── csvExporter.js
+│   │   │   ├── errorHandler.js
 │   │   │   ├── excelParser.js
 │   │   │   ├── jobManager.js
 │   │   │   ├── resultStorage.js
@@ -179,8 +211,12 @@ scrapper-amazon/
 │   │   │   └── worker.js
 │   │   ├── utils/
 │   │   │   ├── delay.js
-│   │   │   └── errors.js
+│   │   │   ├── errors.js
+│   │   │   └── logger.js
 │   │   └── app.js
+│   ├── tests/
+│   │   └── integration.test.js
+│   ├── Dockerfile
 │   ├── package.json
 │   └── .env
 ├── frontend/
@@ -202,13 +238,17 @@ scrapper-amazon/
 │   │   ├── App.jsx
 │   │   ├── index.css
 │   │   └── main.jsx
+│   ├── Dockerfile
+│   ├── nginx.conf
 │   ├── postcss.config.js
 │   ├── tailwind.config.js
 │   └── package.json
 ├── storage/
 │   ├── uploads/
 │   ├── results/
-│   └── exports/
+│   ├── exports/
+│   └── logs/
+├── docker-compose.yml
 ├── CLAUDE.md
 ├── TASKS.md
 └── PROGRESS.md

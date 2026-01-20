@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const config = require('./config');
 const jobRoutes = require('./routes/jobRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const { resumeRunningJobs } = require('./services/worker');
 
 const app = express();
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 
 // API Routes
 app.use('/api/jobs', jobRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

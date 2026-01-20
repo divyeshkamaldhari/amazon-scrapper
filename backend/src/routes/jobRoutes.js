@@ -21,4 +21,10 @@ router.post('/:id/pause', jobController.pauseJob);
 // POST /api/jobs/:id/resume - Resume job
 router.post('/:id/resume', jobController.resumeJob);
 
+// GET /api/jobs/:id/logs - Get job logs
+router.get('/:id/logs', jobController.getJobLogs);
+
+// DELETE /api/jobs/:id - Delete job
+router.delete('/:id', jobController.deleteJob);
+
 module.exports = router;

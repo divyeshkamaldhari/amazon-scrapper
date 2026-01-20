@@ -4,8 +4,9 @@ const { parseExcelFile } = require('../services/excelParser');
 const jobManager = require('../services/jobManager');
 const upcQueue = require('../services/upcQueue');
 const resultStorage = require('../services/resultStorage');
-const { startWorker } = require('../services/worker');
+const { startWorker, getJobErrors } = require('../services/worker');
 const csvExporter = require('../services/csvExporter');
+const logger = require('../utils/logger');
 const config = require('../config');
 const { NotFoundError, BadRequestError, ConflictError } = require('../utils/errors');
 
@@ -236,11 +237,84 @@ async function resumeJob(req, res, next) {
   }
 }
 
+/**
+ * Get job logs
+ * GET /api/jobs/:id/logs
+ */
+async function getJobLogs(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { lines = 100 } = req.query;
+
+    const job = jobManager.getJob(id);
+
+    if (!job) {
+      throw new NotFoundError(`Job ${id} not found`);
+    }
+
+    // Get job-specific logs
+    const logFilePath = logger.getJobLogFilePath(id);
+    const logLines = logger.readLogFile(logFilePath, parseInt(lines, 10));
+
+    // Get recent errors
+    const errors = getJobErrors(id);
+
+    res.json({
+      success: true,
+      data: {
+        jobId: id,
+        logs: logLines,
+        errors: errors.slice(-20), // Last 20 errors
+        logFile: logFilePath
+      }
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Delete a job
+ * DELETE /api/jobs/:id
+ */
+async function deleteJob(req, res, next) {
+  try {
+    const { id } = req.params;
+    const job = jobManager.getJob(id);
+
+    if (!job) {
+      throw new NotFoundError(`Job ${id} not found`);
+    }
+
+    // Cannot delete running jobs
+    if (job.status === jobManager.JOB_STATUS.RUNNING) {
+      throw new ConflictError('Cannot delete a running job. Please pause it first.');
+    }
+
+    // Delete job and all associated files
+    jobManager.deleteJob(id);
+
+    // Delete CSV if exists
+    csvExporter.deleteCsv(id);
+
+    res.json({
+      success: true,
+      message: `Job ${id} deleted successfully`
+    });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   uploadExcel,
   getJobs,
   getJobById,
   downloadCsv,
   pauseJob,
-  resumeJob
+  resumeJob,
+  getJobLogs,
+  deleteJob
 };
